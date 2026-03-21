@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Evil Eye Tarot</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(145deg, #0a0a1a 0%, #0c0c1c 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Cinzel', 'Times New Roman', serif;
+            padding: 20px;
+        }
+        .card {
+            background: rgba(10, 10, 26, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 48px;
+            padding: 24px;
+            max-width: 380px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(212, 175, 55, 0.3);
+            transition: all 0.3s ease;
+        }
+        h1 {
+            font-size: 28px;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #e4b363 0%, #b87c2e 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 20px;
+        }
+        .activation-glow {
+            font-size: 14px;
+            color: #b87c2e;
+            margin-bottom: 20px;
+            border-top: 1px solid rgba(212,175,55,0.3);
+            border-bottom: 1px solid rgba(212,175,55,0.3);
+            padding: 12px 0;
+            letter-spacing: 1px;
+        }
+        .tarot-image {
+            width: 180px;
+            height: 300px;
+            margin: 16px auto;
+            background: #1e1e2a;
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #e4b363;
+            border: 1px solid #e4b363;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            background-size: cover;
+            background-position: center;
+        }
+        .card-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #f0e6c5;
+            margin: 16px 0 8px;
+        }
+        .meaning {
+            font-size: 16px;
+            line-height: 1.4;
+            color: #cdc6a7;
+            margin: 12px 0;
+        }
+        button {
+            background: transparent;
+            border: 1px solid #e4b363;
+            color: #e4b363;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 12px 8px;
+            transition: 0.2s;
+        }
+        button:active { transform: scale(0.96); }
+        .disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        .counter {
+            font-size: 13px;
+            color: #6b6b7a;
+            margin-top: 20px;
+        }
+        .hidden { display: none; }
+        .share-btn {
+            background: #e4b36320;
+            border: 1px solid #e4b363;
+        }
+        .footer {
+            font-size: 10px;
+            margin-top: 24px;
+            color: #4a4a5a;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .animate { animation: fadeIn 0.6s ease; }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
+</head>
+<body>
+<div class="card" id="app">
+    <h1>⚡ EVIL EYE ⚡</h1>
+    <div id="activationSection" class="activation-glow">✨ Tap to activate your energy ✨</div>
+    <div id="tarotSection" class="hidden">
+        <div id="tarotImage" class="tarot-image" style="background-image: url('https://placehold.co/200x300/1e1e2a/e4b363?text=Tarot');"></div>
+        <div id="cardName" class="card-name"></div>
+        <div id="meaning" class="meaning"></div>
+        <div id="extraGuidance" class="meaning" style="font-size:14px; color:#b87c2e;"></div>
+        <div>
+            <button id="drawBtn">Draw Card</button>
+            <button id="shareBtn" class="share-btn">✨ Share ✨</button>
+        </div>
+        <div id="limitMessage" class="counter" style="color:#b87c2e;"></div>
+    </div>
+    <div class="footer">For entertainment only. Tap daily for guidance.</div>
+</div>
+<script>
+    // ---------- 塔罗牌数据（22张大阿卡纳，正向指引）----------
+    const tarotCards = [
+        { name: "The Fool", meaning: "A fresh start. Trust where life takes you today." },
+        { name: "The Magician", meaning: "You have what it takes. Make something happen." },
+        { name: "The High Priestess", meaning: "Quiet your mind. The answer is already in you." },
+        { name: "The Empress", meaning: "Nurture yourself. Growth is unfolding." },
+        { name: "The Emperor", meaning: "You are in control. Build something solid." },
+        { name: "The Hierophant", meaning: "Seek wise counsel. You're not alone." },
+        { name: "The Lovers", meaning: "Choose from the heart. Love leads the way." },
+        { name: "The Chariot", meaning: "Keep going. Your will is stronger than the obstacle." },
+        { name: "Strength", meaning: "You are braver than you feel. Gentle power wins." },
+        { name: "The Hermit", meaning: "A moment of stillness brings clarity." },
+        { name: "Wheel of Fortune", meaning: "Things are shifting. Stay open." },
+        { name: "Justice", meaning: "What you give, you'll receive. Stay fair." },
+        { name: "The Hanged Man", meaning: "Pause. A new angle changes everything." },
+        { name: "Death", meaning: "Let go. Something new is ready to begin." },
+        { name: "Temperance", meaning: "Patience brings harmony. Don't rush." },
+        { name: "The Devil", meaning: "Name what holds you back. You can release it." },
+        { name: "The Tower", meaning: "Shake-up leads to breakthrough. Trust the process." },
+        { name: "The Star", meaning: "Hope is here. Healing is possible." },
+        { name: "The Moon", meaning: "Trust your gut. Not everything is clear yet." },
+        { name: "The Sun", meaning: "Joy. Warmth. Success is near." },
+        { name: "Judgement", meaning: "You're being called to something new. Answer it." },
+        { name: "The World", meaning: "Completion. You made it. Celebrate." }
+    ];
+
+    // 简易设备指纹 (fingerprintjs)
+    let visitorId = null;
+    const API_BASE = ''; // 留空则使用相对路径，需要后端API时填写
+
+    async function getVisitorId() {
+        if (visitorId) return visitorId;
+        const fp = await FingerprintJS.load();
+        const result = await fp.get();
+        visitorId = result.visitorId;
+        return visitorId;
+    }
+
+    // 后端交互（模拟，后续可替换真实API）
+    let dailyUsed = false;
+    let extraCount = 0; // 分享额外次数
+    let lastDrawDate = localStorage.getItem('lastDrawDate');
+
+    function checkDate() {
+        const today = new Date().toDateString();
+        if (lastDrawDate !== today) {
+            // 新的一天，重置次数
+            dailyUsed = false;
+            extraCount = 0;
+            localStorage.setItem('lastDrawDate', today);
+            localStorage.removeItem('dailyUsed');
+            localStorage.removeItem('extraCount');
+        } else {
+            dailyUsed = localStorage.getItem('dailyUsed') === 'true';
+            extraCount = parseInt(localStorage.getItem('extraCount') || '0');
+        }
+    }
+
+    function saveState() {
+        localStorage.setItem('dailyUsed', dailyUsed);
+        localStorage.setItem('extraCount', extraCount);
+        localStorage.setItem('lastDrawDate', new Date().toDateString());
+    }
+
+    function canDraw() {
+        return !dailyUsed || extraCount > 0;
+    }
+
+    function useDraw() {
+        if (!dailyUsed) {
+            dailyUsed = true;
+            saveState();
+            return true;
+        } else if (extraCount > 0) {
+            extraCount--;
+            saveState();
+            return true;
+        }
+        return false;
+    }
+
+    function addExtra() {
+        extraCount++;
+        saveState();
+    }
+
+    // 抽牌展示
+    function drawCard() {
+        if (!canDraw()) {
+            document.getElementById('limitMessage').innerText = '✨ Share to get one more draw today ✨';
+            return false;
+        }
+        if (!useDraw()) return false;
+
+        const randomIndex = Math.floor(Math.random() * tarotCards.length);
+        const card = tarotCards[randomIndex];
+        document.getElementById('cardName').innerText = card.name;
+        document.getElementById('meaning').innerText = card.meaning;
+        // 可加额外微指引（简单随机）
+        const microGuidance = [
+            "✨ Take a deep breath.",
+            "💧 Drink water mindfully.",
+            "🌿 Step outside for a moment.",
+            "📝 Write down one intention.",
+            "👁️ Look at something beautiful.",
+        ];
+        const extra = microGuidance[Math.floor(Math.random() * microGuidance.length)];
+        document.getElementById('extraGuidance').innerText = "✨ " + extra;
+        document.getElementById('limitMessage').innerText = dailyUsed ? (extraCount > 0 ? `You have ${extraCount} extra draw(s) left today` : "Come back tomorrow for a new card.") : "";
+
+        // 更新牌面占位图（后期可替换真实图片）
+        const imgDiv = document.getElementById('tarotImage');
+        imgDiv.style.backgroundImage = `url('https://placehold.co/200x300/1e1e2a/e4b363?text=${encodeURIComponent(card.name)}')`;
+
+        // 显示抽牌区域（如果之前隐藏）
+        document.getElementById('tarotSection').classList.remove('hidden');
+        document.getElementById('activationSection').classList.add('hidden');
+        return true;
+    }
+
+    // 分享功能
+    async function handleShare() {
+        if (!navigator.share) {
+            alert("Share not supported on this browser. You can still copy the link.");
+            return;
+        }
+        try {
+            await navigator.share({
+                title: 'Evil Eye Tarot',
+                text: 'I got my daily guidance! Tap to see yours.',
+                url: window.location.href,
+            });
+            addExtra(); // 分享成功后增加一次额外抽牌机会
+            alert("✨ Shared! You have one extra draw today.");
+            // 刷新限制提示
+            document.getElementById('limitMessage').innerText = dailyUsed ? (extraCount > 0 ? `You have ${extraCount} extra draw(s) left today` : "Come back tomorrow for a new card.") : "";
+        } catch (err) {
+            console.log("Share canceled", err);
+        }
+    }
+
+    // 激活流程（首次访问）
+    async function activate() {
+        const hasActivated = localStorage.getItem('activated');
+        if (!hasActivated) {
+            document.getElementById('activationSection').innerHTML = "✨ Energy Activated ✨<br>Tap your necklace daily for guidance.";
+            localStorage.setItem('activated', 'true');
+            setTimeout(() => {
+                drawCard(); // 激活后直接抽第一张
+            }, 1000);
+        } else {
+            drawCard();
+        }
+    }
+
+    window.onload = async () => {
+        await getVisitorId(); // 记录设备指纹（可用于后端记录）
+        checkDate();
+        activate();
+        document.getElementById('drawBtn').onclick = () => drawCard();
+        document.getElementById('shareBtn').onclick = () => handleShare();
+    };
+</script>
+</body>
+</html>
