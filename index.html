@@ -2,133 +2,242 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Evil Eye Tarot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Evil Eye Guardian · Daily Guidance</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
         body {
-            background: linear-gradient(145deg, #0a0a1a 0%, #0c0c1c 100%);
             min-height: 100vh;
+            background: radial-gradient(circle at 20% 30%, #0a0a1a, #020208);
             display: flex;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
             font-family: 'Cinzel', 'Times New Roman', serif;
             padding: 20px;
+            position: relative;
+            overflow-x: hidden;
         }
+
+        /* 星云背景 */
+        .nebula {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0;
+            animation: twinkle 3s infinite alternate;
+        }
+        @keyframes twinkle {
+            0% { opacity: 0; transform: scale(0.5); }
+            100% { opacity: 0.8; transform: scale(1); }
+        }
+
+        /* 激活动画遮罩 */
+        .activation-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(212,175,55,0.4), #0a0a1a);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            opacity: 0;
+            transition: opacity 0.6s ease;
+            pointer-events: none;
+        }
+        .activation-text {
+            font-size: 32px;
+            color: #e4b363;
+            text-shadow: 0 0 20px #e4b363;
+            letter-spacing: 4px;
+            animation: pulse 1.2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.5; transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1.1); }
+        }
+
+        /* 主卡片 */
         .card {
-            background: rgba(10, 10, 26, 0.8);
-            backdrop-filter: blur(10px);
-            border-radius: 48px;
-            padding: 24px;
-            max-width: 380px;
+            position: relative;
+            z-index: 2;
+            background: rgba(10, 10, 26, 0.55);
+            backdrop-filter: blur(16px);
+            border-radius: 56px;
+            padding: 28px 20px 36px;
+            max-width: 420px;
             width: 100%;
             text-align: center;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(212, 175, 55, 0.3);
-            transition: all 0.3s ease;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.5), 0 0 0 1px rgba(212, 175, 55, 0.3);
+            border: 1px solid rgba(212,175,55,0.2);
         }
+
         h1 {
-            font-size: 28px;
-            letter-spacing: 2px;
-            background: linear-gradient(135deg, #e4b363 0%, #b87c2e 100%);
+            font-size: 32px;
+            letter-spacing: 6px;
+            background: linear-gradient(135deg, #f3e5c0, #c6a15b);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            margin-bottom: 20px;
+            margin-bottom: 8px;
+            font-weight: 600;
         }
-        .activation-glow {
-            font-size: 14px;
-            color: #b87c2e;
-            margin-bottom: 20px;
+        .sub {
+            font-size: 12px;
+            color: #d4b87a;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+        }
+
+        .guardian-status {
+            font-size: 13px;
+            color: #e4b363;
             border-top: 1px solid rgba(212,175,55,0.3);
             border-bottom: 1px solid rgba(212,175,55,0.3);
             padding: 12px 0;
-            letter-spacing: 1px;
+            margin-bottom: 20px;
+        }
+
+        .tarot-container {
+            perspective: 800px;
+            margin: 12px 0 16px;
         }
         .tarot-image {
-            width: 180px;
-            height: 300px;
-            margin: 16px auto;
-            background: #1e1e2a;
-            border-radius: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            color: #e4b363;
-            border: 1px solid #e4b363;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            width: 220px;
+            height: 340px;
+            margin: 0 auto;
+            background: #1a1a2a;
+            border-radius: 28px;
             background-size: cover;
             background-position: center;
+            box-shadow: 0 20px 30px -10px rgba(0,0,0,0.6), 0 0 0 2px #e4b36330, 0 0 0 5px #0a0a1a;
+            transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
         }
+
         .card-name {
-            font-size: 24px;
-            font-weight: bold;
-            color: #f0e6c5;
-            margin: 16px 0 8px;
+            font-size: 28px;
+            font-weight: 600;
+            color: #f7f3e0;
+            margin-top: 20px;
+        }
+        .guardian-line {
+            font-size: 14px;
+            color: #e4b363;
+            margin: 8px 0 4px;
         }
         .meaning {
-            font-size: 16px;
-            line-height: 1.4;
-            color: #cdc6a7;
-            margin: 12px 0;
+            font-size: 18px;
+            line-height: 1.45;
+            color: #ded9c4;
+            margin: 12px 20px;
+            font-style: italic;
+            background: #00000030;
+            padding: 12px;
+            border-radius: 60px;
         }
-        button {
-            background: transparent;
-            border: 1px solid #e4b363;
+        .extra-guidance {
+            font-size: 15px;
             color: #e4b363;
-            padding: 12px 24px;
-            border-radius: 40px;
+            margin: 8px 0 20px;
+        }
+
+        button {
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(8px);
+            border: 1.5px solid #e4b363;
+            color: #e4b363;
+            padding: 12px 28px;
+            border-radius: 60px;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            margin: 12px 8px;
-            transition: 0.2s;
+            margin: 8px 10px;
+            transition: all 0.2s;
+            font-family: inherit;
         }
-        button:active { transform: scale(0.96); }
-        .disabled {
-            opacity: 0.5;
-            pointer-events: none;
-        }
-        .counter {
-            font-size: 13px;
-            color: #6b6b7a;
-            margin-top: 20px;
-        }
-        .hidden { display: none; }
-        .share-btn {
+        button:active {
+            transform: scale(0.94);
             background: #e4b36320;
-            border: 1px solid #e4b363;
         }
+
+        .limit-message {
+            font-size: 13px;
+            color: #b6a87a;
+            margin-top: 20px;
+            background: #00000040;
+            display: inline-block;
+            padding: 6px 18px;
+            border-radius: 40px;
+        }
+
         .footer {
             font-size: 10px;
-            margin-top: 24px;
-            color: #4a4a5a;
+            margin-top: 28px;
+            color: #6b6a78;
         }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .animate { animation: fadeIn 0.6s ease; }
+
+        .hidden {
+            display: none;
+        }
+        .fade-in {
+            animation: gentleAppear 0.8s ease-out;
+        }
+        @keyframes gentleAppear {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-<div class="card" id="app">
-    <h1>⚡ EVIL EYE ⚡</h1>
-    <div id="activationSection" class="activation-glow">✨ Tap to activate your energy ✨</div>
-    <div id="tarotSection" class="hidden">
-        <div id="tarotImage" class="tarot-image" style="background-image: url('https://placehold.co/200x300/1e1e2a/e4b363?text=Tarot');"></div>
-        <div id="cardName" class="card-name"></div>
-        <div id="meaning" class="meaning"></div>
-        <div id="extraGuidance" class="meaning" style="font-size:14px; color:#b87c2e;"></div>
-        <div>
-            <button id="drawBtn">Draw Card</button>
-            <button id="shareBtn" class="share-btn">✨ Share ✨</button>
-        </div>
-        <div id="limitMessage" class="counter" style="color:#b87c2e;"></div>
-    </div>
-    <div class="footer">For entertainment only. Tap daily for guidance.</div>
+<div id="nebulaContainer" class="nebula"></div>
+<div id="activationOverlay" class="activation-overlay" style="opacity:0; pointer-events:none;">
+    <div class="activation-text">✨ AWAKENING ✨</div>
 </div>
+
+<div class="card fade-in" id="app">
+    <h1>⚡ EVIL EYE ⚡</h1>
+    <div class="sub">YOUR DAILY GUARDIAN</div>
+    <div id="guardianStatus" class="guardian-status">✨ Your guardian is awake ✨</div>
+
+    <div id="tarotArea">
+        <div class="tarot-container">
+            <div id="tarotImage" class="tarot-image" style="background-image: url('https://placehold.co/400x600/1e1e2a/e4b363?text=🜟');"></div>
+        </div>
+        <div id="cardName" class="card-name"></div>
+        <div id="guardianLine" class="guardian-line"></div>
+        <div id="meaning" class="meaning"></div>
+        <div id="extraGuidance" class="extra-guidance"></div>
+        <div>
+            <button id="drawBtn">👁️ LISTEN 👁️</button>
+            <button id="shareBtn">✨ SHARE YOUR MESSAGE ✨</button>
+        </div>
+        <div id="limitMsg" class="limit-message"></div>
+    </div>
+    <div class="footer">For entertainment only · Your guardian speaks daily</div>
+</div>
+
 <script>
-    // ---------- 塔罗牌数据（22张大阿卡纳，正向指引）----------
+    // 塔罗牌数据
     const tarotCards = [
         { name: "The Fool", meaning: "A fresh start. Trust where life takes you today." },
         { name: "The Magician", meaning: "You have what it takes. Make something happen." },
@@ -154,141 +263,134 @@
         { name: "The World", meaning: "Completion. You made it. Celebrate." }
     ];
 
-    // 简易设备指纹 (fingerprintjs)
-    let visitorId = null;
-    const API_BASE = ''; // 留空则使用相对路径，需要后端API时填写
+    const microGuidance = [
+        "🌿 Breathe deeply once.",
+        "💧 Drink water with intention.",
+        "✨ Look at the sky for a moment.",
+        "📝 Write down one small win today.",
+        "🕯️ Light a candle (safely).",
+        "🌸 Compliment someone — or yourself.",
+        "👁️ Close your eyes and listen.",
+        "🌙 Say 'I am safe' to yourself."
+    ];
 
-    async function getVisitorId() {
-        if (visitorId) return visitorId;
-        const fp = await FingerprintJS.load();
-        const result = await fp.get();
-        visitorId = result.visitorId;
-        return visitorId;
+    // 生成星星
+    function createStars() {
+        const container = document.getElementById('nebulaContainer');
+        for (let i = 0; i < 80; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            const size = Math.random() * 3 + 1;
+            star.style.width = size + 'px';
+            star.style.height = size + 'px';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 5 + 's';
+            star.style.animationDuration = Math.random() * 4 + 2 + 's';
+            container.appendChild(star);
+        }
     }
 
-    // 后端交互（模拟，后续可替换真实API）
-    let dailyUsed = false;
-    let extraCount = 0; // 分享额外次数
-    let lastDrawDate = localStorage.getItem('lastDrawDate');
-
-    function checkDate() {
+    // 每日限制
+    function canListenToday() {
         const today = new Date().toDateString();
-        if (lastDrawDate !== today) {
-            // 新的一天，重置次数
-            dailyUsed = false;
-            extraCount = 0;
-            localStorage.setItem('lastDrawDate', today);
-            localStorage.removeItem('dailyUsed');
-            localStorage.removeItem('extraCount');
-        } else {
-            dailyUsed = localStorage.getItem('dailyUsed') === 'true';
-            extraCount = parseInt(localStorage.getItem('extraCount') || '0');
-        }
-    }
-
-    function saveState() {
-        localStorage.setItem('dailyUsed', dailyUsed);
-        localStorage.setItem('extraCount', extraCount);
-        localStorage.setItem('lastDrawDate', new Date().toDateString());
-    }
-
-    function canDraw() {
-        return !dailyUsed || extraCount > 0;
-    }
-
-    function useDraw() {
-        if (!dailyUsed) {
-            dailyUsed = true;
-            saveState();
-            return true;
-        } else if (extraCount > 0) {
-            extraCount--;
-            saveState();
+        const lastDate = localStorage.getItem('lastListenDate');
+        if (lastDate !== today) {
+            localStorage.setItem('lastListenDate', today);
+            localStorage.setItem('listenedToday', 'false');
             return true;
         }
-        return false;
+        return localStorage.getItem('listenedToday') !== 'true';
     }
 
-    function addExtra() {
-        extraCount++;
-        saveState();
+    function markListened() {
+        localStorage.setItem('listenedToday', 'true');
+        localStorage.setItem('lastListenDate', new Date().toDateString());
     }
 
-    // 抽牌展示
-    function drawCard() {
-        if (!canDraw()) {
-            document.getElementById('limitMessage').innerText = '✨ Share to get one more draw today ✨';
-            return false;
+    // 抽牌（聆听守护神）
+    function listenToGuardian() {
+        if (!canListenToday()) {
+            document.getElementById('limitMsg').innerText = "✨ You've already listened today. Come back tomorrow ✨";
+            return;
         }
-        if (!useDraw()) return false;
+
+        const imgDiv = document.getElementById('tarotImage');
+        imgDiv.style.transform = 'scale(0.98)';
+        setTimeout(() => { imgDiv.style.transform = ''; }, 150);
 
         const randomIndex = Math.floor(Math.random() * tarotCards.length);
         const card = tarotCards[randomIndex];
-        document.getElementById('cardName').innerText = card.name;
-        document.getElementById('meaning').innerText = card.meaning;
-        // 可加额外微指引（简单随机）
-        const microGuidance = [
-            "✨ Take a deep breath.",
-            "💧 Drink water mindfully.",
-            "🌿 Step outside for a moment.",
-            "📝 Write down one intention.",
-            "👁️ Look at something beautiful.",
-        ];
         const extra = microGuidance[Math.floor(Math.random() * microGuidance.length)];
-        document.getElementById('extraGuidance').innerText = "✨ " + extra;
-        document.getElementById('limitMessage').innerText = dailyUsed ? (extraCount > 0 ? `You have ${extraCount} extra draw(s) left today` : "Come back tomorrow for a new card.") : "";
 
-        // 更新牌面占位图（后期可替换真实图片）
-        const imgDiv = document.getElementById('tarotImage');
-        imgDiv.style.backgroundImage = `url('https://placehold.co/200x300/1e1e2a/e4b363?text=${encodeURIComponent(card.name)}')`;
+        document.getElementById('cardName').innerText = card.name;
+        document.getElementById('guardianLine').innerHTML = '✨ Your Evil Eye says... ✨';
+        document.getElementById('meaning').innerText = card.meaning;
+        document.getElementById('extraGuidance').innerHTML = extra;
+        document.getElementById('limitMsg').innerHTML = "✨ You've listened. Return tomorrow for another message ✨";
 
-        // 显示抽牌区域（如果之前隐藏）
-        document.getElementById('tarotSection').classList.remove('hidden');
-        document.getElementById('activationSection').classList.add('hidden');
-        return true;
+        imgDiv.style.backgroundImage = `url('https://placehold.co/400x600/1e1e2a/e4b363?text=${encodeURIComponent(card.name)}')`;
+        markListened();
+        
+        if (navigator.vibrate) navigator.vibrate(50);
     }
 
-    // 分享功能
+    // 分享解锁
     async function handleShare() {
         if (!navigator.share) {
-            alert("Share not supported on this browser. You can still copy the link.");
+            alert("Tap the link to share your guardian's message ✨");
             return;
         }
         try {
             await navigator.share({
-                title: 'Evil Eye Tarot',
-                text: 'I got my daily guidance! Tap to see yours.',
+                title: 'Evil Eye Guardian',
+                text: 'My guardian spoke to me today. Listen to yours ✨',
                 url: window.location.href,
             });
-            addExtra(); // 分享成功后增加一次额外抽牌机会
-            alert("✨ Shared! You have one extra draw today.");
-            // 刷新限制提示
-            document.getElementById('limitMessage').innerText = dailyUsed ? (extraCount > 0 ? `You have ${extraCount} extra draw(s) left today` : "Come back tomorrow for a new card.") : "";
-        } catch (err) {
-            console.log("Share canceled", err);
-        }
+            const today = new Date().toDateString();
+            const lastDate = localStorage.getItem('lastListenDate');
+            if (lastDate === today && localStorage.getItem('listenedToday') === 'true') {
+                localStorage.setItem('listenedToday', 'false');
+                document.getElementById('limitMsg').innerHTML = "✨ You can listen one more time today ✨";
+            }
+        } catch (err) {}
     }
 
-    // 激活流程（首次访问）
-    async function activate() {
-        const hasActivated = localStorage.getItem('activated');
-        if (!hasActivated) {
-            document.getElementById('activationSection').innerHTML = "✨ Energy Activated ✨<br>Tap your necklace daily for guidance.";
-            localStorage.setItem('activated', 'true');
+    // 首次激活动画
+    function showActivationAndProceed() {
+        const overlay = document.getElementById('activationOverlay');
+        overlay.style.opacity = '1';
+        overlay.style.pointerEvents = 'none';
+        
+        // 动画结束后隐藏并抽第一张牌
+        setTimeout(() => {
+            overlay.style.opacity = '0';
             setTimeout(() => {
-                drawCard(); // 激活后直接抽第一张
-            }, 1000);
-        } else {
-            drawCard();
-        }
+                overlay.style.pointerEvents = 'none';
+                // 首次激活后自动抽一张牌（让用户立刻体验）
+                listenToGuardian();
+            }, 600);
+        }, 1800);
     }
 
-    window.onload = async () => {
-        await getVisitorId(); // 记录设备指纹（可用于后端记录）
-        checkDate();
-        activate();
-        document.getElementById('drawBtn').onclick = () => drawCard();
-        document.getElementById('shareBtn').onclick = () => handleShare();
+    // 初始化
+    window.onload = () => {
+        createStars();
+        
+        const hasActivated = localStorage.getItem('guardianActivated');
+        if (!hasActivated) {
+            // 第一次打开：播放激活动画
+            localStorage.setItem('guardianActivated', 'true');
+            showActivationAndProceed();
+        } else {
+            // 已激活：直接显示主界面，检查每日限制
+            if (!canListenToday()) {
+                document.getElementById('limitMsg').innerText = "✨ You've already listened today. Come back tomorrow ✨";
+            }
+        }
+        
+        document.getElementById('drawBtn').onclick = listenToGuardian;
+        document.getElementById('shareBtn').onclick = handleShare;
     };
 </script>
 </body>
