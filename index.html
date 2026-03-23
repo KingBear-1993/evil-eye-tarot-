@@ -2,119 +2,234 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Evil Eye Guardian</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Evil Eye Guardian · Daily Whisper</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none; /* 禁止选中文本 */
+            -webkit-tap-highlight-color: transparent;
+        }
         body {
-            background: #0a0a1a;
+            min-height: 100vh;
+            background: radial-gradient(circle at 30% 20%, #0a0a1a, #020208);
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Georgia', 'Times New Roman', serif;
             padding: 20px;
+            position: relative;
+            overflow-x: hidden;
         }
+        /* 动态光晕背景 */
+        .glow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background: radial-gradient(circle at 40% 50%, rgba(212,175,55,0.1), transparent 70%);
+            animation: breathe 10s infinite alternate;
+        }
+        @keyframes breathe {
+            0% { opacity: 0.3; transform: scale(1); }
+            100% { opacity: 0.9; transform: scale(1.08); }
+        }
+        /* 主卡片 */
         .card {
-            background: rgba(10,10,26,0.9);
-            border-radius: 48px;
-            padding: 30px 20px;
-            max-width: 400px;
+            position: relative;
+            z-index: 2;
+            background: rgba(8, 8, 20, 0.7);
+            backdrop-filter: blur(24px);
+            border-radius: 64px;
+            padding: 28px 20px 36px;
+            max-width: 460px;
             width: 100%;
             text-align: center;
-            border: 1px solid #e4b363;
-            box-shadow: 0 25px 45px rgba(0,0,0,0.5);
+            box-shadow: 0 30px 50px rgba(0,0,0,0.5), 0 0 0 1px rgba(212,175,55,0.4);
+            border: 1px solid rgba(212,175,55,0.3);
         }
         h1 {
-            font-size: 32px;
-            letter-spacing: 4px;
-            color: #e4b363;
-            margin-bottom: 12px;
+            font-size: 36px;
+            letter-spacing: 6px;
+            background: linear-gradient(135deg, #f3e5c0, #c6a15b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 8px;
+            font-weight: 600;
+            text-shadow: 0 0 12px rgba(198,161,91,0.3);
         }
-        .status {
-            font-size: 13px;
+        .sub {
+            font-size: 12px;
             color: #e4b363;
-            border-top: 1px solid #e4b363;
-            border-bottom: 1px solid #e4b363;
-            padding: 10px 0;
+            letter-spacing: 2px;
             margin-bottom: 20px;
+            border-top: 1px solid rgba(212,175,55,0.3);
+            border-bottom: 1px solid rgba(212,175,55,0.3);
+            padding: 8px 0;
+            display: inline-block;
+            width: auto;
         }
-        .tarot-image {
-            width: 200px;
-            height: 300px;
-            margin: 0 auto;
-            background: #1e1e2a;
+        /* 塔罗牌容器 */
+        .tarot-container {
+            perspective: 1000px;
+            margin: 20px auto;
+            width: 220px;
+            height: 340px;
+            cursor: pointer;
+        }
+        .tarot-card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transition: transform 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            transform-style: preserve-3d;
+        }
+        .tarot-card.flipped {
+            transform: rotateY(180deg);
+        }
+        .front, .back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
             border-radius: 28px;
             background-size: cover;
             background-position: center;
-            border: 1px solid #e4b363;
+            box-shadow: 0 20px 30px rgba(0,0,0,0.4);
+        }
+        .front {
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMzAwIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iIzFlMWUyYSIgLz48Y2lyY2xlIGN4PSIxMDAiIGN5PSIxNTAiIHI9IjUwIiBmaWxsPSIjZTNiNjNjIiBvcGFjaXR5PSIwLjMiLz48cGF0aCBkPSJNMTAwIDgwIGwxMCAzMCAtMjAgMCB6IiBmaWxsPSIjZTNiNjNjIi8+PC9zdmc+');
+            background-size: cover;
+        }
+        .back {
+            background-image: url('https://placehold.co/400x600/1e1e2a/e4b363?text=🜟');
+            transform: rotateY(180deg);
         }
         .card-name {
-            font-size: 24px;
+            font-size: 26px;
             font-weight: bold;
-            color: #f0e6c5;
-            margin-top: 20px;
+            color: #f7f3e0;
+            margin-top: 16px;
+            letter-spacing: 1px;
         }
         .guardian-line {
             font-size: 14px;
             color: #e4b363;
             margin: 8px 0;
+            font-style: italic;
         }
         .meaning {
-            font-size: 16px;
-            color: #cdc6a7;
+            font-size: 18px;
+            line-height: 1.4;
+            color: #ded9c4;
             margin: 12px 20px;
-            font-style: italic;
-            background: #00000030;
+            background: #00000040;
             padding: 12px;
-            border-radius: 40px;
+            border-radius: 60px;
         }
         button {
-            background: transparent;
-            border: 1px solid #e4b363;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(8px);
+            border: 1.5px solid #e4b363;
             color: #e4b363;
             padding: 12px 28px;
-            border-radius: 40px;
-            font-size: 16px;
+            border-radius: 60px;
+            font-size: 18px;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 10px;
+            margin: 8px 10px;
+            transition: all 0.2s;
             font-family: inherit;
         }
-        button:active { transform: scale(0.96); }
+        button:active {
+            transform: scale(0.95);
+            background: #e4b36320;
+        }
         .limit-message {
-            font-size: 12px;
+            font-size: 13px;
             color: #b6a87a;
             margin-top: 20px;
             background: #00000040;
             display: inline-block;
-            padding: 6px 16px;
+            padding: 6px 18px;
             border-radius: 40px;
         }
         .footer {
             font-size: 10px;
-            margin-top: 24px;
+            margin-top: 28px;
             color: #6b6a78;
+        }
+        /* 激活动画遮罩 */
+        .activation-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(212,175,55,0.4), #0a0a1a);
+            backdrop-filter: blur(12px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            pointer-events: none;
+        }
+        .activation-text {
+            font-size: 44px;
+            color: #e4b363;
+            text-shadow: 0 0 30px #e4b363;
+            letter-spacing: 8px;
+            animation: pulse 1.4s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.6; transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1.1); }
+        }
+        /* 禁用右键和长按菜单 */
+        img, div {
+            -webkit-touch-callout: none;
         }
     </style>
 </head>
 <body>
+<div class="glow"></div>
+<div id="activationOverlay" class="activation-overlay" style="opacity:0; pointer-events:none;">
+    <div class="activation-text">✨ AWAKENING ✨</div>
+</div>
 <div class="card">
     <h1>⚡ EVIL EYE ⚡</h1>
-    <div class="status">✨ Your guardian is awake ✨</div>
+    <div class="sub">Your Guardian Speaks Daily</div>
 
-    <div id="tarotImage" class="tarot-image" style="background-image: url('https://placehold.co/200x300/1e1e2a/e4b363?text=🜟');"></div>
+    <div class="tarot-container">
+        <div class="tarot-card" id="tarotCard">
+            <div class="front"></div>
+            <div class="back" id="tarotBack" style="background-image: url('https://placehold.co/400x600/1e1e2a/e4b363?text=🜟');"></div>
+        </div>
+    </div>
+
     <div id="cardName" class="card-name"></div>
     <div id="guardianLine" class="guardian-line"></div>
     <div id="meaning" class="meaning"></div>
     <button id="listenBtn">👁️ LISTEN 👁️</button>
     <div id="limitMsg" class="limit-message"></div>
-    <div class="footer">For entertainment only · Your guardian speaks daily</div>
+    <div class="footer">For entertainment only · Touch your bracelet daily</div>
 </div>
 
 <script>
-    // 22张大阿卡纳（正向指引）
-    const tarotCards = [
+    // 防止右键和选择文本（简单防护）
+    document.addEventListener('contextmenu', function(e) { e.preventDefault(); return false; });
+    document.addEventListener('selectstart', function(e) { e.preventDefault(); return false; });
+
+    // 22张大阿卡纳 + 1张隐藏牌
+    const baseCards = [
         { name: "The Fool", meaning: "A fresh start. Trust where life takes you today." },
         { name: "The Magician", meaning: "You have what it takes. Make something happen." },
         { name: "The High Priestess", meaning: "Quiet your mind. The answer is already in you." },
@@ -138,21 +253,83 @@
         { name: "Judgement", meaning: "You're being called to something new. Answer it." },
         { name: "The World", meaning: "Completion. You made it. Celebrate." }
     ];
+    const hiddenCard = { name: "The Seeker", meaning: "You've walked a path. New wisdom awaits. Stay curious." };
 
+    // 每日限制 + 连续签到
     function canListenToday() {
         const today = new Date().toDateString();
-        const lastDate = localStorage.getItem('lastListenDate');
-        if (lastDate !== today) {
-            localStorage.setItem('lastListenDate', today);
-            localStorage.setItem('listenedToday', 'false');
+        const last = localStorage.getItem('lastListen');
+        if (last !== today) {
+            localStorage.setItem('lastListen', today);
+            localStorage.setItem('listened', 'false');
             return true;
         }
-        return localStorage.getItem('listenedToday') !== 'true';
+        return localStorage.getItem('listened') !== 'true';
+    }
+    function markListened() {
+        localStorage.setItem('listened', 'true');
+        localStorage.setItem('lastListen', new Date().toDateString());
+        // 更新连续签到
+        let streak = parseInt(localStorage.getItem('streak') || '0');
+        const lastStreakDate = localStorage.getItem('lastStreakDate');
+        const todayStr = new Date().toDateString();
+        if (lastStreakDate === todayStr) return;
+        if (lastStreakDate && (new Date() - new Date(lastStreakDate)) / (1000*3600*24) === 1) {
+            streak++;
+        } else {
+            streak = 1;
+        }
+        localStorage.setItem('streak', streak);
+        localStorage.setItem('lastStreakDate', todayStr);
+    }
+    function getStreak() { return parseInt(localStorage.getItem('streak') || '0'); }
+    function getUnlockedHidden() { return localStorage.getItem('unlockedHidden') === 'true'; }
+    function unlockHidden() {
+        if (!getUnlockedHidden() && getStreak() >= 7) {
+            localStorage.setItem('unlockedHidden', 'true');
+            return true;
+        }
+        return false;
     }
 
-    function markListened() {
-        localStorage.setItem('listenedToday', 'true');
-        localStorage.setItem('lastListenDate', new Date().toDateString());
+    // 抽牌逻辑
+    function drawCard() {
+        let cards = [...baseCards];
+        if (getUnlockedHidden()) {
+            cards.push(hiddenCard);
+        }
+        const randomIndex = Math.floor(Math.random() * cards.length);
+        return cards[randomIndex];
+    }
+
+    // UI更新 + 动画 + 震动
+    function updateUI(card) {
+        document.getElementById('cardName').innerText = card.name;
+        document.getElementById('guardianLine').innerHTML = '✨ Your Evil Eye says... ✨';
+        document.getElementById('meaning').innerText = card.meaning;
+        const backDiv = document.getElementById('tarotBack');
+        backDiv.style.backgroundImage = `url('https://placehold.co/400x600/1e1e2a/e4b363?text=${encodeURIComponent(card.name)}')`;
+        const cardElem = document.getElementById('tarotCard');
+        cardElem.classList.add('flipped');
+        setTimeout(() => cardElem.classList.remove('flipped'), 600);
+        if (navigator.vibrate) navigator.vibrate(80);
+    }
+
+    // 监听抽牌
+    let audio = null;
+    let musicPlayed = false;
+
+    function playMusic() {
+        if (!audio && !musicPlayed) {
+            audio = new Audio('https://cdn.pixabay.com/download/audio/2022/05/27/audio_2c6b0f2b1c.mp3?filename=meditation-ambient-123982.mp3');
+            audio.loop = true;
+            audio.volume = 0.25;
+            audio.play().catch(e => console.log("Auto-play prevented, will play after user tap."));
+            musicPlayed = true;
+        } else if (audio && !musicPlayed) {
+            audio.play().catch(e=>{});
+            musicPlayed = true;
+        }
     }
 
     function listenToGuardian() {
@@ -160,28 +337,76 @@
             document.getElementById('limitMsg').innerText = "✨ You've already listened today. Come back tomorrow ✨";
             return;
         }
-
-        const random = Math.floor(Math.random() * tarotCards.length);
-        const card = tarotCards[random];
-
-        document.getElementById('cardName').innerText = card.name;
-        document.getElementById('guardianLine').innerHTML = '✨ Your Evil Eye says... ✨';
-        document.getElementById('meaning').innerText = card.meaning;
+        const card = drawCard();
+        updateUI(card);
         document.getElementById('limitMsg').innerHTML = "✨ You've listened. Return tomorrow for another message ✨";
-
-        const imgDiv = document.getElementById('tarotImage');
-        imgDiv.style.backgroundImage = `url('https://placehold.co/200x300/1e1e2a/e4b363?text=${encodeURIComponent(card.name)}')`;
-
         markListened();
-        if (navigator.vibrate) navigator.vibrate(50);
+        // 检查是否刚解锁隐藏牌
+        if (unlockHidden()) {
+            setTimeout(() => {
+                alert("✨ 7 days of listening! Your guardian reveals a hidden card: The Seeker ✨");
+            }, 300);
+        }
+        // 播放背景音乐（如果还没播放）
+        playMusic();
     }
 
+    // 分享解锁额外次数
+    async function handleShare() {
+        if (!navigator.share) {
+            alert("Tap the link to share with a friend ✨");
+            return;
+        }
+        try {
+            await navigator.share({
+                title: 'Evil Eye Guardian',
+                text: 'I received my daily guidance. Listen to yours ✨',
+                url: window.location.href,
+            });
+            const today = new Date().toDateString();
+            const lastDate = localStorage.getItem('lastListen');
+            if (lastDate === today && localStorage.getItem('listened') === 'true') {
+                localStorage.setItem('listened', 'false');
+                document.getElementById('limitMsg').innerHTML = "✨ You can listen one more time today ✨";
+            }
+        } catch (err) {}
+    }
+
+    // 首次激活动画（仅第一次）
+    function showActivation() {
+        const hasActivated = localStorage.getItem('guardianActivated');
+        if (!hasActivated) {
+            const overlay = document.getElementById('activationOverlay');
+            overlay.style.opacity = '1';
+            overlay.style.pointerEvents = 'none';
+            setTimeout(() => {
+                overlay.style.opacity = '0';
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                }, 800);
+            }, 1800);
+            localStorage.setItem('guardianActivated', 'true');
+        }
+    }
+
+    // 页面加载完成
     window.onload = () => {
-        const btn = document.getElementById('listenBtn');
-        btn.onclick = listenToGuardian;
+        showActivation();
+        document.getElementById('listenBtn').onclick = listenToGuardian;
+        // 添加分享按钮（可选，这里添加一个分享按钮到界面）
+        const shareBtn = document.createElement('button');
+        shareBtn.innerText = '✨ SHARE ✨';
+        shareBtn.onclick = handleShare;
+        shareBtn.style.marginLeft = '10px';
+        document.querySelector('.card').appendChild(shareBtn);
         if (!canListenToday()) {
             document.getElementById('limitMsg').innerText = "✨ You've already listened today. Come back tomorrow ✨";
         }
+        // 预加载音乐但不播放（等待用户第一次点击）
+        audio = new Audio('https://cdn.pixabay.com/download/audio/2022/05/27/audio_2c6b0f2b1c.mp3?filename=meditation-ambient-123982.mp3');
+        audio.loop = true;
+        audio.volume = 0.25;
+        audio.load();
     };
 </script>
 </body>
