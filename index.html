@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Evil Eye Guardian · Daily Guidance</title>
+    <title>Evil Eye Guardian</title>
     <style>
         * {
             margin: 0;
@@ -20,66 +20,9 @@
             justify-content: center;
             font-family: 'Cinzel', 'Times New Roman', serif;
             padding: 20px;
-            position: relative;
-            overflow-x: hidden;
         }
 
-        /* 星云背景 */
-        .nebula {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-        .star {
-            position: absolute;
-            background: white;
-            border-radius: 50%;
-            opacity: 0;
-            animation: twinkle 3s infinite alternate;
-        }
-        @keyframes twinkle {
-            0% { opacity: 0; transform: scale(0.5); }
-            100% { opacity: 0.8; transform: scale(1); }
-        }
-
-        /* 激活动画遮罩 */
-        .activation-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, rgba(212,175,55,0.4), #0a0a1a);
-            backdrop-filter: blur(8px);
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            opacity: 0;
-            transition: opacity 0.6s ease;
-            pointer-events: none;
-        }
-        .activation-text {
-            font-size: 32px;
-            color: #e4b363;
-            text-shadow: 0 0 20px #e4b363;
-            letter-spacing: 4px;
-            animation: pulse 1.2s infinite;
-        }
-        @keyframes pulse {
-            0% { opacity: 0.5; transform: scale(0.9); }
-            100% { opacity: 1; transform: scale(1.1); }
-        }
-
-        /* 主卡片 */
         .card {
-            position: relative;
-            z-index: 2;
             background: rgba(10, 10, 26, 0.55);
             backdrop-filter: blur(16px);
             border-radius: 56px;
@@ -99,13 +42,6 @@
             background-clip: text;
             color: transparent;
             margin-bottom: 8px;
-            font-weight: 600;
-        }
-        .sub {
-            font-size: 12px;
-            color: #d4b87a;
-            letter-spacing: 2px;
-            margin-bottom: 12px;
         }
 
         .guardian-status {
@@ -117,10 +53,6 @@
             margin-bottom: 20px;
         }
 
-        .tarot-container {
-            perspective: 800px;
-            margin: 12px 0 16px;
-        }
         .tarot-image {
             width: 220px;
             height: 340px;
@@ -130,7 +62,6 @@
             background-size: cover;
             background-position: center;
             box-shadow: 0 20px 30px -10px rgba(0,0,0,0.6), 0 0 0 2px #e4b36330, 0 0 0 5px #0a0a1a;
-            transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
         }
 
         .card-name {
@@ -139,11 +70,13 @@
             color: #f7f3e0;
             margin-top: 20px;
         }
+
         .guardian-line {
             font-size: 14px;
             color: #e4b363;
             margin: 8px 0 4px;
         }
+
         .meaning {
             font-size: 18px;
             line-height: 1.45;
@@ -153,11 +86,6 @@
             background: #00000030;
             padding: 12px;
             border-radius: 60px;
-        }
-        .extra-guidance {
-            font-size: 15px;
-            color: #e4b363;
-            margin: 8px 0 20px;
         }
 
         button {
@@ -176,7 +104,6 @@
         }
         button:active {
             transform: scale(0.94);
-            background: #e4b36320;
         }
 
         .limit-message {
@@ -194,50 +121,25 @@
             margin-top: 28px;
             color: #6b6a78;
         }
-
-        .hidden {
-            display: none;
-        }
-        .fade-in {
-            animation: gentleAppear 0.8s ease-out;
-        }
-        @keyframes gentleAppear {
-            0% { opacity: 0; transform: translateY(20px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-<div id="nebulaContainer" class="nebula"></div>
-<div id="activationOverlay" class="activation-overlay" style="opacity:0; pointer-events:none;">
-    <div class="activation-text">✨ AWAKENING ✨</div>
-</div>
-
-<div class="card fade-in" id="app">
+<div class="card">
     <h1>⚡ EVIL EYE ⚡</h1>
-    <div class="sub">YOUR DAILY GUARDIAN</div>
-    <div id="guardianStatus" class="guardian-status">✨ Your guardian is awake ✨</div>
+    <div class="guardian-status">✨ Your guardian is awake ✨</div>
 
-    <div id="tarotArea">
-        <div class="tarot-container">
-            <div id="tarotImage" class="tarot-image" style="background-image: url('https://placehold.co/400x600/1e1e2a/e4b363?text=🜟');"></div>
-        </div>
-        <div id="cardName" class="card-name"></div>
-        <div id="guardianLine" class="guardian-line"></div>
-        <div id="meaning" class="meaning"></div>
-        <div id="extraGuidance" class="extra-guidance"></div>
-        <div>
-            <button id="drawBtn">👁️ LISTEN 👁️</button>
-            <button id="shareBtn">✨ SHARE YOUR MESSAGE ✨</button>
-        </div>
-        <div id="limitMsg" class="limit-message"></div>
-    </div>
+    <div id="tarotImage" class="tarot-image" style="background-image: url('https://placehold.co/400x600/1e1e2a/e4b363?text=🜟');"></div>
+    <div id="cardName" class="card-name"></div>
+    <div id="guardianLine" class="guardian-line"></div>
+    <div id="meaning" class="meaning"></div>
+    <button id="listenBtn">👁️ LISTEN 👁️</button>
+    <div id="limitMsg" class="limit-message"></div>
     <div class="footer">For entertainment only · Your guardian speaks daily</div>
 </div>
 
 <script>
-    // 塔罗牌数据
+    // 22张大阿卡纳（正向指引）
     const tarotCards = [
         { name: "The Fool", meaning: "A fresh start. Trust where life takes you today." },
         { name: "The Magician", meaning: "You have what it takes. Make something happen." },
@@ -263,35 +165,7 @@
         { name: "The World", meaning: "Completion. You made it. Celebrate." }
     ];
 
-    const microGuidance = [
-        "🌿 Breathe deeply once.",
-        "💧 Drink water with intention.",
-        "✨ Look at the sky for a moment.",
-        "📝 Write down one small win today.",
-        "🕯️ Light a candle (safely).",
-        "🌸 Compliment someone — or yourself.",
-        "👁️ Close your eyes and listen.",
-        "🌙 Say 'I am safe' to yourself."
-    ];
-
-    // 生成星星
-    function createStars() {
-        const container = document.getElementById('nebulaContainer');
-        for (let i = 0; i < 80; i++) {
-            const star = document.createElement('div');
-            star.className = 'star';
-            const size = Math.random() * 3 + 1;
-            star.style.width = size + 'px';
-            star.style.height = size + 'px';
-            star.style.left = Math.random() * 100 + '%';
-            star.style.top = Math.random() * 100 + '%';
-            star.style.animationDelay = Math.random() * 5 + 's';
-            star.style.animationDuration = Math.random() * 4 + 2 + 's';
-            container.appendChild(star);
-        }
-    }
-
-    // 每日限制
+    // 每日限制（localStorage，避免eval）
     function canListenToday() {
         const today = new Date().toDateString();
         const lastDate = localStorage.getItem('lastListenDate');
@@ -315,82 +189,33 @@
             return;
         }
 
-        const imgDiv = document.getElementById('tarotImage');
-        imgDiv.style.transform = 'scale(0.98)';
-        setTimeout(() => { imgDiv.style.transform = ''; }, 150);
-
+        // 随机选牌
         const randomIndex = Math.floor(Math.random() * tarotCards.length);
         const card = tarotCards[randomIndex];
-        const extra = microGuidance[Math.floor(Math.random() * microGuidance.length)];
 
+        // 更新DOM
         document.getElementById('cardName').innerText = card.name;
         document.getElementById('guardianLine').innerHTML = '✨ Your Evil Eye says... ✨';
         document.getElementById('meaning').innerText = card.meaning;
-        document.getElementById('extraGuidance').innerHTML = extra;
         document.getElementById('limitMsg').innerHTML = "✨ You've listened. Return tomorrow for another message ✨";
 
+        // 更新占位图（后期替换真实图片）
+        const imgDiv = document.getElementById('tarotImage');
         imgDiv.style.backgroundImage = `url('https://placehold.co/400x600/1e1e2a/e4b363?text=${encodeURIComponent(card.name)}')`;
+
         markListened();
-        
+        // 可选轻触震动
         if (navigator.vibrate) navigator.vibrate(50);
     }
 
-    // 分享解锁
-    async function handleShare() {
-        if (!navigator.share) {
-            alert("Tap the link to share your guardian's message ✨");
-            return;
-        }
-        try {
-            await navigator.share({
-                title: 'Evil Eye Guardian',
-                text: 'My guardian spoke to me today. Listen to yours ✨',
-                url: window.location.href,
-            });
-            const today = new Date().toDateString();
-            const lastDate = localStorage.getItem('lastListenDate');
-            if (lastDate === today && localStorage.getItem('listenedToday') === 'true') {
-                localStorage.setItem('listenedToday', 'false');
-                document.getElementById('limitMsg').innerHTML = "✨ You can listen one more time today ✨";
-            }
-        } catch (err) {}
-    }
-
-    // 首次激活动画
-    function showActivationAndProceed() {
-        const overlay = document.getElementById('activationOverlay');
-        overlay.style.opacity = '1';
-        overlay.style.pointerEvents = 'none';
-        
-        // 动画结束后隐藏并抽第一张牌
-        setTimeout(() => {
-            overlay.style.opacity = '0';
-            setTimeout(() => {
-                overlay.style.pointerEvents = 'none';
-                // 首次激活后自动抽一张牌（让用户立刻体验）
-                listenToGuardian();
-            }, 600);
-        }, 1800);
-    }
-
-    // 初始化
+    // 页面加载
     window.onload = () => {
-        createStars();
-        
-        const hasActivated = localStorage.getItem('guardianActivated');
-        if (!hasActivated) {
-            // 第一次打开：播放激活动画
-            localStorage.setItem('guardianActivated', 'true');
-            showActivationAndProceed();
-        } else {
-            // 已激活：直接显示主界面，检查每日限制
-            if (!canListenToday()) {
-                document.getElementById('limitMsg').innerText = "✨ You've already listened today. Come back tomorrow ✨";
-            }
+        const listenBtn = document.getElementById('listenBtn');
+        listenBtn.onclick = listenToGuardian;
+
+        if (!canListenToday()) {
+            document.getElementById('limitMsg').innerText = "✨ You've already listened today. Come back tomorrow ✨";
         }
-        
-        document.getElementById('drawBtn').onclick = listenToGuardian;
-        document.getElementById('shareBtn').onclick = handleShare;
     };
 </script>
 </body>
